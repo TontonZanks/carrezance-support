@@ -1,0 +1,19 @@
+<UserControl x:Class="Carrezance.Support.App.Views.TechnicianView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Style="{StaticResource PageTitle}" Text="Mode technicien"/>
+        <TextBlock Text="Cette zone est réservée aux interventions techniques avancées."
+                   Foreground="{StaticResource MutedTextBrush}" Margin="0,0,0,18"/>
+
+        <Border Style="{StaticResource Card}">
+            <WrapPanel>
+                <Button Content="Ouvrir Services Windows" Command="{Binding OpenServicesCommand}"/>
+                <Button Content="Ouvrir Observateur d'événements" Command="{Binding OpenEventViewerCommand}" Style="{StaticResource SecondaryButton}"/>
+                <Button Content="Ouvrir Connexions réseau" Command="{Binding OpenNetworkConnectionsCommand}" Style="{StaticResource SecondaryButton}"/>
+                <Button Content="Ouvrir Programmes et fonctionnalités" Command="{Binding OpenProgramsCommand}" Style="{StaticResource SecondaryButton}"/>
+                <Button Content="Ouvrir Gestion de l'ordinateur" Command="{Binding OpenComputerManagementCommand}" Style="{StaticResource SecondaryButton}"/>
+            </WrapPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

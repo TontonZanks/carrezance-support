@@ -1,0 +1,2 @@
+C:\Users\carre\OneDrive\Desktop\Carrezance\Carrezance.Support\Carrezance.Support.App\bin\Release\net8.0-windows\win-x64\publish\Carrezance Support.pdb
+C:\Users\carre\OneDrive\Desktop\Carrezance\Carrezance.Support\Carrezance.Support.App\bin\Release\net8.0-windows\win-x64\publish\Carrezance Support.exe
