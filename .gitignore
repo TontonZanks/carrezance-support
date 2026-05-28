@@ -1,0 +1,110 @@
+# Build .NET
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+# Visual Studio
+.vs/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+*.vsp
+*.vspx
+*.psess
+*.vssscc
+*.vspscc
+*.ncb
+*.opendb
+*.VC.db
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+logs/
+Logs/
+
+# Rapports générés par Carrezance Support
+CarrezanceSupport_Rapport_*.html
+CarrezanceSupport_Rapport_*.txt
+Rapports/
+Reports/
+Reports/
+reports/
+
+# Publications locales
+publish/
+publish-v*/
+Publish/
+publish-*/
+*.publishsettings
+
+# Releases locales
+Releases/
+releases/
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.cache
+*.bak
+*.old
+*.orig
+*.pid
+
+# Fichiers Windows / macOS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+project.lock.json
+project.assets.json
+
+# Test results / coverage
+TestResults/
+coverage/
+coverage.xml
+coverage.json
+*.coverage
+*.coveragexml
+*.trx
+
+# Fichiers générés par single-file extraction ou runtime
+*.runtimeconfig.dev.json
+
+# Certificats / secrets / clés
+*.pfx
+*.p12
+*.key
+*.pem
+*.cer
+*.crt
+secrets.json
+appsettings.Development.json
+
+# Ne jamais exclure la documentation utile
+!README.md
+!CHANGELOG.md
+!RELEASE.md
