@@ -8,25 +8,32 @@ using Carrezance.Support.App.Services;
 
 namespace Carrezance.Support.App.ViewModels;
 
-public sealed class AssistanceViewModel
+public sealed class AssistanceViewModel : ObservableObject
 {
     private readonly SystemInfoService _systemInfoService;
     private readonly ReportService _reportService;
     private readonly LogService _logService;
     private readonly ProcessService _processService;
+    private readonly UpdateService _updateService;
     private SystemReport _report;
+    private UpdateInfo _updateInfo = new();
+    private bool _isCheckingForUpdates;
+    private string _updateStatus = "Vérification non lancée";
 
     public AssistanceViewModel(
         SystemInfoService systemInfoService,
         ReportService reportService,
         LogService logService,
-        ProcessService processService)
+        ProcessService processService,
+        UpdateService updateService)
     {
         _systemInfoService = systemInfoService;
         _reportService = reportService;
         _logService = logService;
         _processService = processService;
+        _updateService = updateService;
         _report = _systemInfoService.CreateQuickReport();
+        _updateInfo.CurrentVersion = AppInfo.Version;
         SupportItems = new ObservableCollection<KeyValuePair<string, string>>();
         AboutItems = new ObservableCollection<KeyValuePair<string, string>>
         {
@@ -48,10 +55,22 @@ public sealed class AssistanceViewModel
         OpenLastHtmlReportCommand = new RelayCommand(OpenLastHtmlReport);
         CopyLastHtmlReportPathCommand = new RelayCommand(CopyLastHtmlReportPath);
         OpenLogsFolderCommand = new RelayCommand(OpenLogsFolder);
+        CheckForUpdatesCommand = new AsyncRelayCommand(CheckForUpdatesAsync);
+        DownloadUpdateCommand = new RelayCommand(DownloadUpdate, () => HasUpdateDownload);
+        OpenReleaseNotesCommand = new RelayCommand(OpenReleaseNotes, () => HasUpdateReleaseUrl);
     }
 
     public ObservableCollection<KeyValuePair<string, string>> SupportItems { get; }
     public ObservableCollection<KeyValuePair<string, string>> AboutItems { get; }
+    public string CurrentVersion => $"v{AppInfo.Version}";
+    public string LatestVersion => string.IsNullOrWhiteSpace(_updateInfo.LatestVersion) ? "Non disponible" : $"v{_updateInfo.LatestVersion}";
+    public string UpdateStatus { get => _updateStatus; private set => SetProperty(ref _updateStatus, value); }
+    public string LastUpdateCheck => _updateInfo.LastCheckedAt == default ? "Jamais" : _updateInfo.LastCheckedAt.ToString("dd/MM/yyyy HH:mm:ss");
+    public string UpdateNotification => _updateInfo.IsUpdateAvailable ? $"Une mise à jour est disponible : v{_updateInfo.LatestVersion}" : string.Empty;
+    public bool IsCheckingForUpdates { get => _isCheckingForUpdates; private set => SetProperty(ref _isCheckingForUpdates, value); }
+    public bool HasUpdateDownload => _updateInfo.IsUpdateAvailable && !string.IsNullOrWhiteSpace(_updateInfo.AssetDownloadUrl);
+    public bool HasUpdateReleaseUrl => _updateInfo.IsUpdateAvailable && !string.IsNullOrWhiteSpace(_updateInfo.ReleaseUrl);
+    public Visibility UpdateActionVisibility => _updateInfo.IsUpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
     public ICommand CopyInfoCommand { get; }
     public ICommand ExportReportCommand { get; }
     public ICommand ExportHtmlReportCommand { get; }
@@ -60,6 +79,19 @@ public sealed class AssistanceViewModel
     public ICommand OpenLastHtmlReportCommand { get; }
     public ICommand CopyLastHtmlReportPathCommand { get; }
     public ICommand OpenLogsFolderCommand { get; }
+    public ICommand CheckForUpdatesCommand { get; }
+    public ICommand DownloadUpdateCommand { get; }
+    public ICommand OpenReleaseNotesCommand { get; }
+
+    public async Task CheckForUpdatesSilentlyAsync()
+    {
+        await CheckForUpdatesCoreAsync(showErrors: false);
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        await CheckForUpdatesCoreAsync(showErrors: true);
+    }
 
     private void Refresh()
     {
@@ -152,6 +184,99 @@ public sealed class AssistanceViewModel
     private void OpenLogsFolder()
     {
         OpenFolder(_logService.LogFolder, "Ouvrir dossier des logs");
+    }
+
+    private async Task CheckForUpdatesCoreAsync(bool showErrors)
+    {
+        IsCheckingForUpdates = true;
+        UpdateStatus = "Vérification en cours";
+        RefreshUpdateBindings();
+
+        try
+        {
+            _updateInfo = await _updateService.CheckForUpdatesAsync();
+            if (_updateInfo.IsUpdateAvailable)
+            {
+                UpdateStatus = "Mise à jour disponible";
+            }
+            else if (!string.IsNullOrWhiteSpace(_updateInfo.ErrorMessage))
+            {
+                UpdateStatus = "Vérification impossible";
+                if (showErrors)
+                {
+                    MessageHelper.ShowError("La vérification de mise à jour est impossible pour le moment.");
+                }
+            }
+            else
+            {
+                UpdateStatus = "À jour";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService.Log("[Update]", "Erreur", ex.ToString());
+            UpdateStatus = "Vérification impossible";
+            if (showErrors)
+            {
+                MessageHelper.ShowError("La vérification de mise à jour est impossible pour le moment.");
+            }
+        }
+        finally
+        {
+            IsCheckingForUpdates = false;
+            RefreshUpdateBindings();
+        }
+    }
+
+    private void DownloadUpdate()
+    {
+        if (string.IsNullOrWhiteSpace(_updateInfo.AssetDownloadUrl))
+        {
+            MessageHelper.ShowError("Aucun fichier de mise à jour n'est disponible.");
+            return;
+        }
+
+        var result = _processService.Open(_updateInfo.AssetDownloadUrl, "Télécharger mise à jour");
+        if (!result.Success)
+        {
+            MessageHelper.ShowResult(result);
+        }
+    }
+
+    private void OpenReleaseNotes()
+    {
+        if (string.IsNullOrWhiteSpace(_updateInfo.ReleaseUrl))
+        {
+            MessageHelper.ShowError("Les notes de version ne sont pas disponibles.");
+            return;
+        }
+
+        var result = _processService.Open(_updateInfo.ReleaseUrl, "Voir notes de version");
+        if (!result.Success)
+        {
+            MessageHelper.ShowResult(result);
+        }
+    }
+
+    private void RefreshUpdateBindings()
+    {
+        OnPropertyChanged(nameof(CurrentVersion));
+        OnPropertyChanged(nameof(LatestVersion));
+        OnPropertyChanged(nameof(LastUpdateCheck));
+        OnPropertyChanged(nameof(UpdateNotification));
+        OnPropertyChanged(nameof(HasUpdateDownload));
+        OnPropertyChanged(nameof(HasUpdateReleaseUrl));
+        OnPropertyChanged(nameof(UpdateActionVisibility));
+
+        if (DownloadUpdateCommand is RelayCommand downloadCommand)
+        {
+            downloadCommand.RaiseCanExecuteChanged();
+        }
+
+        if (OpenReleaseNotesCommand is RelayCommand notesCommand)
+        {
+            notesCommand.RaiseCanExecuteChanged();
+        }
     }
 
     private void OpenFolder(string folder, string actionName)

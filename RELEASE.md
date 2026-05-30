@@ -137,6 +137,7 @@ Contenu :
 Usage :
 
 - téléchargement principal pour utilisateur final.
+- asset utilisé en priorité par le système de vérification des mises à jour de Carrezance Support.
 
 ### B. ZIP technicien
 
