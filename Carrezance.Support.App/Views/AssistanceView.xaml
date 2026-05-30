@@ -58,6 +58,48 @@
         </Border>
 
         <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource SectionTitle}" Text="Mises à jour"/>
+                <TextBlock Text="{Binding UpdateNotification}"
+                           Foreground="{StaticResource NavyBrush}"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,10"/>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Version actuelle" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Column="1" Text="{Binding CurrentVersion}" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="1" Text="Dernière version disponible" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LatestVersion}" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="2" Text="Statut" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding UpdateStatus}" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="3" Text="Dernière vérification" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LastUpdateCheck}"/>
+                </Grid>
+                <WrapPanel>
+                    <Button Content="Rechercher une mise à jour" Command="{Binding CheckForUpdatesCommand}"/>
+                    <Button Content="Télécharger la mise à jour"
+                            Command="{Binding DownloadUpdateCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            Visibility="{Binding UpdateActionVisibility}"/>
+                    <Button Content="Voir les notes de version"
+                            Command="{Binding OpenReleaseNotesCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            Visibility="{Binding UpdateActionVisibility}"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource Card}">
             <TextBlock Text="Emplacements prévus pour les prochaines versions : site web Carrezance, email support, outil de télémaintenance."
                        Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap"/>
         </Border>

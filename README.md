@@ -1,6 +1,6 @@
 # Carrezance Support
 
-Version actuelle : **v1.3.4**
+Version actuelle : **v1.4.0**
 
 Carrezance Support est une application Windows portable d'assistance, de diagnostic et de reparation simple pour des utilisateurs non techniques.
 
@@ -14,6 +14,7 @@ L'application se lance directement depuis `Carrezance Support.exe`, sans install
 - Detection Windows 10 / Windows 11 / Windows Server via une methode robuste.
 - Detection des logiciels importants avec statut, source, chemin/ID et niveau de confiance.
 - Mode technicien avec raccourcis vers les consoles Windows courantes.
+- Vérification des mises à jour stables via GitHub Releases.
 - Journal local `CarrezanceSupport.log`.
 
 ## Actions de reparation
@@ -28,6 +29,16 @@ Les actions guidees demandent confirmation et ajoutent une entree dans l'histori
 - nettoyer uniquement le dossier TEMP de l'utilisateur courant.
 
 Les actions d'impression qui necessitent des droits eleves proposent une relance en administrateur via l'UAC Windows.
+
+## Mises à jour
+
+Carrezance Support vérifie en arrière-plan si une nouvelle version stable est disponible sur GitHub Releases :
+
+```text
+https://github.com/TontonZanks/carrezance-support/releases
+```
+
+En v1.4.0, l'application propose seulement de consulter ou télécharger la mise à jour. Elle ne télécharge pas silencieusement, ne remplace pas l'exécutable et ne lance aucun updater automatique.
 
 ## Rapports
 

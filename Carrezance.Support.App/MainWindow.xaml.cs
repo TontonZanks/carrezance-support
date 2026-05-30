@@ -20,6 +20,8 @@ public partial class MainWindow : Window
         var officeService = new OfficeService(logService, processService, repairActionHistoryService);
         var cleaningService = new CleaningService(logService, repairActionHistoryService);
         var reportService = new ReportService(logService, repairActionHistoryService);
+        var updateService = new UpdateService(logService);
+        var assistanceViewModel = new AssistanceViewModel(systemInfoService, reportService, logService, processService, updateService);
 
         DataContext = new MainViewModel(
             logService,
@@ -29,8 +31,10 @@ public partial class MainWindow : Window
             new PrinterViewModel(printerService, processService, repairActionHistoryService, adminService),
             new OfficeViewModel(officeService, repairActionHistoryService),
             new CleaningViewModel(cleaningService, systemInfoService, repairActionHistoryService),
-            new AssistanceViewModel(systemInfoService, reportService, logService, processService),
+            assistanceViewModel,
             new TechnicianViewModel(processService),
             adminService);
+
+        Loaded += async (_, _) => await assistanceViewModel.CheckForUpdatesSilentlyAsync();
     }
 }

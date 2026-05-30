@@ -21,6 +21,19 @@ Utiliser ce format pour les futures versions :
 ### Technique
 - ...
 
+## v1.4.0 - 2026-05-30
+
+### Ajouté
+- Vérification des mises à jour via GitHub Releases.
+- Section Mises à jour dans l'interface.
+- Bouton de recherche manuelle de mise à jour.
+- Bouton de téléchargement vers l'asset EXE GitHub Release.
+
+### Sécurité
+- Aucun téléchargement silencieux.
+- Aucune exécution automatique.
+- Aucun token GitHub stocké.
+
 ## v1.3.4 - 2026-05-28
 
 ### Ajouté
