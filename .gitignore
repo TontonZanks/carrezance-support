@@ -55,6 +55,8 @@ publish-*/
 # Releases locales
 Releases/
 releases/
+artifacts/
+*.zip
 
 # Fichiers temporaires
 *.tmp

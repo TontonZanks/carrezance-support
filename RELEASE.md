@@ -1,25 +1,81 @@
 # Procédure de release - Carrezance Support
 
-Ce document decrit la procedure standard pour generer une version portable de Carrezance Support et publier une release GitHub.
+Ce document décrit la procédure standard pour préparer, construire et publier une version stable de Carrezance Support.
 
-## Prerequis developpeur
+## Workflow Git recommandé
+
+Branches :
+
+- `main` : branche stable / production.
+- `develop` : branche de test / intégration.
+
+Règle générale :
+
+- travailler sur `develop` ;
+- lancer un build Release x64 ;
+- tester localement ;
+- committer sur `develop` ;
+- pousser `develop` ;
+- valider manuellement ;
+- merger `develop` vers `main` ;
+- créer le tag depuis `main` ;
+- publier la GitHub Release depuis `main`.
+
+Créer `develop` si nécessaire :
+
+```powershell
+git checkout -b develop
+git push -u origin develop
+```
+
+Basculer sur `develop` :
+
+```powershell
+git checkout develop
+```
+
+Commit sur `develop` :
+
+```powershell
+git add .
+git commit -m "..."
+git push origin develop
+```
+
+Merge validé vers `main` :
+
+```powershell
+git checkout main
+git pull origin main
+git merge develop
+git push origin main
+```
+
+Créer le tag :
+
+```powershell
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+## Prérequis développeur
 
 - Windows 10 ou Windows 11 x64.
-- SDK .NET 8 installe.
+- SDK .NET 8 installé.
 - Workload Windows Desktop/WPF disponible.
-- Git configure.
-- Acces au depot GitHub.
+- Git configuré.
+- Accès au dépôt GitHub.
 
-Verification :
+Vérification :
 
 ```powershell
 dotnet --list-sdks
 git status
 ```
 
-## Verifier la version
+## Vérifier la version
 
-Avant de publier, verifier que la version est coherente dans :
+Avant de publier, vérifier que la version est cohérente dans :
 
 - `Carrezance.Support.App\Helpers\AppInfo.cs`
 - `Carrezance.Support.App\Carrezance.Support.App.csproj`
@@ -55,52 +111,95 @@ Depuis le dossier `Carrezance.Support` :
 dotnet publish .\Carrezance.Support.App\Carrezance.Support.App.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:PublishTrimmed=false
 ```
 
-Chemin de l'executable genere :
+Chemin de l'exécutable généré :
 
 ```text
 Carrezance.Support.App\bin\Release\net8.0-windows\win-x64\publish\Carrezance Support.exe
 ```
 
-## Creation du dossier de release
+## Politique de release
 
-Creer un dossier temporaire de release, par exemple :
+À chaque GitHub Release stable, publier deux assets.
 
-```powershell
-New-Item -ItemType Directory -Force .\release\CarrezanceSupport-v1.3.4-win-x64
-Copy-Item '.\Carrezance.Support.App\bin\Release\net8.0-windows\win-x64\publish\Carrezance Support.exe' '.\release\CarrezanceSupport-v1.3.4-win-x64\'
-```
+### A. EXE utilisateur
 
-Ajouter uniquement les fichiers utiles a l'utilisateur final.
-
-## Creation du ZIP
-
-Exemple :
-
-```powershell
-Compress-Archive -Path .\release\CarrezanceSupport-v1.3.4-win-x64\* -DestinationPath .\release\CarrezanceSupport-v1.3.4-win-x64.zip -Force
-```
-
-Nom recommande :
+Nom :
 
 ```text
-CarrezanceSupport-v1.3.4-win-x64.zip
+CarrezanceSupport-vX.X.X-win-x64.exe
 ```
 
-## Verification du contenu du ZIP
+Contenu :
 
-Verifier que le ZIP contient au minimum :
+- l'exécutable single-file publié `Carrezance Support.exe` ;
+- renommé uniquement pour la release en `CarrezanceSupport-vX.X.X-win-x64.exe`.
+
+Usage :
+
+- téléchargement principal pour utilisateur final.
+
+### B. ZIP technicien
+
+Nom :
+
+```text
+CarrezanceSupport-vX.X.X-win-x64.zip
+```
+
+Contenu :
+
+- `Carrezance Support.exe`
+- `README.md`
+- `CHANGELOG.md`
+- `RELEASE.md`
+
+Usage :
+
+- archive complète pour technicien ;
+- maintenance ;
+- archivage.
+
+Ces fichiers ne doivent jamais être committés dans Git. Ils doivent uniquement être attachés aux GitHub Releases.
+
+## Création des assets de release
+
+Méthode recommandée :
+
+```powershell
+.\scripts\Create-ReleasePackage.ps1 -Version 1.3.4
+```
+
+Sans paramètre, le script lit la version depuis `AppInfo.cs` :
+
+```powershell
+.\scripts\Create-ReleasePackage.ps1
+```
+
+Le script crée :
+
+```text
+artifacts\vX.X.X\CarrezanceSupport-vX.X.X-win-x64.exe
+artifacts\vX.X.X\CarrezanceSupport-vX.X.X-win-x64.zip
+```
+
+## Vérification du contenu du ZIP
+
+Vérifier que le ZIP contient :
 
 ```text
 Carrezance Support.exe
+README.md
+CHANGELOG.md
+RELEASE.md
 ```
 
-Verifier aussi :
+Vérifier aussi :
 
-- l'executable se lance sans installation ;
-- la version affichee dans l'interface est correcte ;
+- l'exécutable se lance sans installation ;
+- la version affichée dans l'interface est correcte ;
 - le diagnostic rapide fonctionne ;
 - l'export HTML fonctionne ;
-- aucune dependance externe visible n'est requise.
+- aucune dépendance externe visible n'est requise.
 
 ## Commit Git
 
@@ -111,36 +210,41 @@ git status
 git diff
 ```
 
-Commit recommande :
+Commit recommandé sur `develop` :
 
 ```powershell
-git add README.md CHANGELOG.md RELEASE.md Carrezance.Support.App\Carrezance.Support.App.csproj Carrezance.Support.App\Helpers\AppInfo.cs
-git commit -m "Release v1.3.4"
-git push
+git add .
+git commit -m "Prepare release vX.X.X"
+git push origin develop
 ```
 
-Adapter la liste des fichiers si d'autres fichiers ont ete modifies pour la version.
+Ne merger vers `main` qu'après validation manuelle.
 
 ## Tag Git
 
-Creer et pousser le tag :
+Le tag doit être créé uniquement après merge validé sur `main` :
 
 ```powershell
-git tag v1.3.4
-git push origin v1.3.4
+git checkout main
+git pull origin main
+git tag vX.X.X
+git push origin vX.X.X
 ```
 
 ## Publication GitHub Release
 
-Dans l'onglet `Releases` du depot GitHub :
+Dans l'onglet `Releases` du dépôt GitHub :
 
-- creer une nouvelle release ;
-- choisir le tag `v1.3.4` ;
-- titre recommande : `Carrezance Support v1.3.4` ;
-- joindre le fichier `CarrezanceSupport-v1.3.4-win-x64.zip` ;
+- créer une nouvelle release ;
+- choisir le tag `vX.X.X` ;
+- titre recommandé : `Carrezance Support vX.X.X` ;
+- joindre `CarrezanceSupport-vX.X.X-win-x64.exe` ;
+- joindre `CarrezanceSupport-vX.X.X-win-x64.zip` ;
 - copier les points importants depuis `CHANGELOG.md`.
 
-## Fichiers a ne jamais committer
+Les releases GitHub sont créées uniquement depuis `main`.
+
+## Fichiers à ne jamais committer
 
 Ne pas committer :
 
@@ -148,19 +252,21 @@ Ne pas committer :
 - `obj/`
 - `publish/`
 - `release/`
+- `artifacts/`
+- `*.zip`
 - `CarrezanceSupport.log`
-- rapports TXT ou HTML generes localement ;
-- ZIP de release, sauf decision explicite contraire.
+- rapports TXT ou HTML générés localement ;
+- exécutables ou ZIP de release.
 
-Verifier que `.gitignore` couvre ces fichiers avant chaque release.
+Vérifier que `.gitignore` couvre ces fichiers avant chaque release.
 
-## Notes futures pour le systeme de mise a jour
+## Notes futures pour le système de mise à jour
 
-Pour une future mise a jour automatique ou semi-automatique, prevoir :
+Pour une future mise à jour automatique ou semi-automatique, prévoir :
 
-- un manifeste de version publie avec la release ;
-- une signature ou un hash SHA256 du ZIP ;
-- une verification de signature avant execution ;
-- aucune execution de script distant ;
-- un canal stable et un canal test si necessaire ;
+- un manifeste de version publié avec la release ;
+- une signature ou un hash SHA256 du ZIP et de l'EXE ;
+- une vérification de signature avant exécution ;
+- aucune exécution de script distant ;
+- un canal stable et un canal test si nécessaire ;
 - une documentation claire pour les techniciens.
