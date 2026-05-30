@@ -56,3 +56,4 @@ Utiliser ce format pour les futures versions :
 - Publication self-contained single-file.
 - Architecture MVVM avec services separes.
 - Logs locaux non bloquants.
+- Procédure de release enrichie avec génération de SHA256 pour l'EXE et le ZIP.

@@ -161,6 +161,48 @@ Usage :
 
 Ces fichiers ne doivent jamais être committés dans Git. Ils doivent uniquement être attachés aux GitHub Releases.
 
+## Confiance et vérification des fichiers
+
+Les fichiers doivent être téléchargés uniquement depuis la page GitHub Releases officielle du dépôt :
+
+```text
+https://github.com/TontonZanks/carrezance-support/releases
+```
+
+Windows SmartScreen peut afficher un avertissement sur un exécutable non signé, surtout si le fichier est récent ou peu téléchargé. Cet avertissement ne signifie pas forcément que le fichier est dangereux, mais il rappelle que l'exécutable n'est pas encore signé avec un certificat de confiance éditeur.
+
+À chaque release, le script génère aussi :
+
+```text
+SHA256SUMS.txt
+```
+
+Format :
+
+```text
+<hash>  CarrezanceSupport-vX.X.X-win-x64.exe
+<hash>  CarrezanceSupport-vX.X.X-win-x64.zip
+```
+
+Vérifier le SHA256 d'un fichier téléchargé :
+
+```powershell
+Get-FileHash .\CarrezanceSupport-vX.X.X-win-x64.exe -Algorithm SHA256
+```
+
+Comparer la valeur affichée avec celle présente dans `SHA256SUMS.txt`.
+
+## Signature numérique
+
+Une future version pourra signer `CarrezanceSupport-vX.X.X-win-x64.exe` avec un certificat Code Signing.
+
+Objectifs :
+
+- améliorer la confiance utilisateur ;
+- réduire les avertissements SmartScreen ;
+- permettre au technicien de vérifier l'éditeur du fichier ;
+- renforcer la chaîne de distribution.
+
 ## Création des assets de release
 
 Méthode recommandée :
@@ -180,6 +222,7 @@ Le script crée :
 ```text
 artifacts\vX.X.X\CarrezanceSupport-vX.X.X-win-x64.exe
 artifacts\vX.X.X\CarrezanceSupport-vX.X.X-win-x64.zip
+artifacts\vX.X.X\SHA256SUMS.txt
 ```
 
 ## Vérification du contenu du ZIP
@@ -240,6 +283,7 @@ Dans l'onglet `Releases` du dépôt GitHub :
 - titre recommandé : `Carrezance Support vX.X.X` ;
 - joindre `CarrezanceSupport-vX.X.X-win-x64.exe` ;
 - joindre `CarrezanceSupport-vX.X.X-win-x64.zip` ;
+- joindre `SHA256SUMS.txt` ;
 - copier les points importants depuis `CHANGELOG.md`.
 
 Les releases GitHub sont créées uniquement depuis `main`.
