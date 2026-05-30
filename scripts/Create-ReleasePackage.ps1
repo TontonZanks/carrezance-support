@@ -38,6 +38,7 @@ $releaseExeName = "CarrezanceSupport-$versionTag-win-x64.exe"
 $releaseZipName = "CarrezanceSupport-$versionTag-win-x64.zip"
 $releaseExePath = Join-Path $artifactRoot $releaseExeName
 $releaseZipPath = Join-Path $artifactRoot $releaseZipName
+$sha256SumsPath = Join-Path $artifactRoot "SHA256SUMS.txt"
 
 if (Test-Path $artifactRoot) {
     Remove-Item $artifactRoot -Recurse -Force
@@ -60,9 +61,18 @@ foreach ($doc in @("README.md", "CHANGELOG.md", "RELEASE.md")) {
 
 Compress-Archive -Path (Join-Path $zipFolder "*") -DestinationPath $releaseZipPath -Force
 
+$exeHash = (Get-FileHash $releaseExePath -Algorithm SHA256).Hash.ToLowerInvariant()
+$zipHash = (Get-FileHash $releaseZipPath -Algorithm SHA256).Hash.ToLowerInvariant()
+$sha256Content = @(
+    "$exeHash  $releaseExeName",
+    "$zipHash  $releaseZipName"
+)
+$sha256Content | Set-Content -Path $sha256SumsPath -Encoding ASCII
+
 Write-Host ""
 Write-Host "Assets de release generes :"
 Write-Host "EXE : $releaseExePath"
 Write-Host "ZIP : $releaseZipPath"
+Write-Host "SHA256 : $sha256SumsPath"
 Write-Host ""
 Write-Host "Ces fichiers doivent etre ajoutes uniquement a GitHub Releases, pas au depot Git."

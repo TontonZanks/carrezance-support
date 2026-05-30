@@ -1,6 +1,6 @@
 # Carrezance Support
 
-Version actuelle : **v1.4.0**
+Version actuelle : **v1.4.1**
 
 Carrezance Support est une application Windows portable d'assistance, de diagnostic et de reparation simple pour des utilisateurs non techniques.
 
@@ -38,7 +38,7 @@ Carrezance Support vérifie en arrière-plan si une nouvelle version stable est 
 https://github.com/TontonZanks/carrezance-support/releases
 ```
 
-En v1.4.0, l'application propose seulement de consulter ou télécharger la mise à jour. Elle ne télécharge pas silencieusement, ne remplace pas l'exécutable et ne lance aucun updater automatique.
+Depuis v1.4.0, l'application propose seulement de consulter ou télécharger la mise à jour. Elle ne télécharge pas silencieusement, ne remplace pas l'exécutable et ne lance aucun updater automatique.
 
 ## Rapports
 
