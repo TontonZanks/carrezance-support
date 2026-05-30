@@ -21,6 +21,15 @@ Utiliser ce format pour les futures versions :
 ### Technique
 - ...
 
+## v1.4.1 - 2026-05-30
+
+### Modifié
+- Version mineure destinée à tester le système de vérification des mises à jour via GitHub Releases.
+- Libellé README ajusté pour indiquer que la vérification des mises à jour est disponible depuis v1.4.0.
+
+### Technique
+- Le script de packaging génère un fichier `SHA256SUMS.txt` pour les assets de release.
+
 ## v1.4.0 - 2026-05-30
 
 ### Ajouté
